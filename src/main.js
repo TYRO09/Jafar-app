@@ -53,10 +53,19 @@ async function initVosk() {
             }
         }, 300);
         
-        // Load the model with an aggressive timeout in case the Web Worker hangs silently
-        const modelUrl = new URL('/model/model.tar.gz', window.location.href).href;
+        // Pre-fetch the model on the main thread to bypass Capacitor Web Worker network restrictions
+        micStatus.textContent = "Downloading model to device...";
+        const response = await fetch('/model/model.tar.gz');
+        if (!response.ok) {
+            throw new Error(`Failed to fetch model: ${response.status} ${response.statusText}`);
+        }
         
-        const loadModelPromise = createModel(modelUrl);
+        const modelBlob = await response.blob();
+        const modelBlobUrl = URL.createObjectURL(modelBlob);
+        
+        micStatus.textContent = "Extracting & Initializing Engine...";
+        
+        const loadModelPromise = createModel(modelBlobUrl);
         const timeoutPromise = new Promise((_, reject) => 
             setTimeout(() => reject(new Error("Model loading timed out after 60 seconds. Memory or Worker issue.")), 60000)
         );
