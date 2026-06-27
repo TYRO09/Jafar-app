@@ -236,14 +236,17 @@ saveSettingsBtn.addEventListener('click', () => {
 
 testConnBtn.addEventListener('click', async () => {
     const testIp = espIpInput.value.trim();
-    settingsLog.textContent = `Pinging http://${testIp}/ ...`;
+    const testPath = espPathInput.value.trim();
+    const fullUrl = `http://${testIp}${testPath}0`;
+    
+    settingsLog.textContent = `Pinging ${fullUrl} ...`;
     settingsLog.style.color = "#b0c4de";
     
     try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
         
-        await fetch(`http://${testIp}/`, { 
+        await fetch(fullUrl, { 
             method: 'GET',
             mode: 'no-cors',
             signal: controller.signal 
