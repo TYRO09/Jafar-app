@@ -32,8 +32,9 @@ async function initVosk() {
         micStatus.textContent = "Loading offline AI model (40MB)...";
         micBtn.disabled = true;
         
-        // Load the model from the public directory
-        model = await createModel('/model/model.tar.gz');
+        // Load the model from the public directory (using absolute URL for Blob Worker compatibility)
+        const modelUrl = new URL('/model/model.tar.gz', window.location.href).href;
+        model = await createModel(modelUrl);
         recognizer = new model.KaldiRecognizer(16000);
         
         recognizer.on("result", (message) => {
