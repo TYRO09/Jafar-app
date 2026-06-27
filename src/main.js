@@ -1,7 +1,9 @@
 import './style.css';
 import { createModel } from 'vosk-browser';
 
-const ESP_IP = "192.168.4.1";
+// Default Settings
+let ESP_IP = localStorage.getItem('esp_ip') || "192.168.4.1";
+let ESP_PATH = localStorage.getItem('esp_path') || "/cmd?servo=1&angle=";
 
 const commandMap = {
     "zero": 0, "0": 0,
@@ -179,7 +181,7 @@ function stopListening() {
 async function sendToESP(angle) {
     try {
         logMessage(`Sending angle ${angle}° to ESP...`);
-        const url = `http://${ESP_IP}/cmd?servo=1&angle=${angle}`;
+        const url = `http://${ESP_IP}${ESP_PATH}${angle}`;
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
@@ -194,11 +196,67 @@ async function sendToESP(angle) {
         logMessage(`✓ Sent → Servo Angle: ${angle}°`, "success");
     } catch (error) {
         console.error("ESP connection error:", error);
-        logMessage("✗ ESP not connected", "error");
-        modeDisplay.textContent = "Disconnected";
-        modeDisplay.style.color = "var(--error-color)";
+        logMessage(`✗ ESP error: ${error.message}`, "error");
     }
 }
+
+// --- Settings Modal Logic ---
+const settingsBtn = document.getElementById('settings-btn');
+const settingsModal = document.getElementById('settings-modal');
+const espIpInput = document.getElementById('esp-ip-input');
+const espPathInput = document.getElementById('esp-path-input');
+const saveSettingsBtn = document.getElementById('save-settings-btn');
+const testConnBtn = document.getElementById('test-conn-btn');
+const settingsLog = document.getElementById('settings-log');
+
+// Init inputs
+espIpInput.value = ESP_IP;
+espPathInput.value = ESP_PATH;
+
+settingsBtn.addEventListener('click', () => {
+    settingsModal.classList.remove('hidden');
+    settingsLog.textContent = "";
+});
+
+// Close modal when clicking outside
+settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) {
+        settingsModal.classList.add('hidden');
+    }
+});
+
+saveSettingsBtn.addEventListener('click', () => {
+    ESP_IP = espIpInput.value.trim();
+    ESP_PATH = espPathInput.value.trim();
+    localStorage.setItem('esp_ip', ESP_IP);
+    localStorage.setItem('esp_path', ESP_PATH);
+    settingsModal.classList.add('hidden');
+    checkESPConnection(); // Re-check with new IP
+});
+
+testConnBtn.addEventListener('click', async () => {
+    const testIp = espIpInput.value.trim();
+    settingsLog.textContent = `Pinging http://${testIp}/ ...`;
+    settingsLog.style.color = "#b0c4de";
+    
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        await fetch(`http://${testIp}/`, { 
+            method: 'GET',
+            mode: 'no-cors',
+            signal: controller.signal 
+        });
+        
+        clearTimeout(timeoutId);
+        settingsLog.textContent = "✅ Success! ESP Responded.";
+        settingsLog.style.color = "#00e676";
+    } catch (e) {
+        settingsLog.textContent = `❌ Failed: ${e.message} (Timeout or blocked)`;
+        settingsLog.style.color = "#ff5252";
+    }
+});
 
 function processCommand(text) {
     let found = false;
