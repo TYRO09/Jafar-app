@@ -4,11 +4,11 @@ import { createModel } from 'vosk-browser';
 const ESP_IP = "192.168.4.1";
 
 const commandMap = {
-    "zero": 0,
-    "one": 90,
-    "two": 120,
-    "three": 150,
-    "four": 180,
+    "zero": 0, "0": 0,
+    "one": 90, "1": 90, "won": 90,
+    "two": 120, "2": 120, "to": 120, "too": 120,
+    "three": 150, "3": 150, "tree": 150,
+    "four": 180, "4": 180, "for": 180
 };
 
 // UI Elements
@@ -182,7 +182,7 @@ async function sendToESP(angle) {
         const url = `http://${ESP_IP}/cmd?servo=1&angle=${angle}`;
         
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         await fetch(url, { 
             method: 'GET',
@@ -249,8 +249,8 @@ micBtn.addEventListener('click', toggleListening);
 async function checkESPConnection() {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 2000);
-        await fetch(`http://${ESP_IP}/?ping=${Date.now()}`, { 
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        await fetch(`http://${ESP_IP}/`, { 
             method: 'GET',
             mode: 'no-cors',
             signal: controller.signal 
