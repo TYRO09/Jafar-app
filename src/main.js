@@ -53,9 +53,15 @@ async function initVosk() {
             }
         }, 300);
         
-        // Load the model from the public directory (using absolute URL for Blob Worker compatibility)
+        // Load the model with an aggressive timeout in case the Web Worker hangs silently
         const modelUrl = new URL('/model/model.tar.gz', window.location.href).href;
-        model = await createModel(modelUrl);
+        
+        const loadModelPromise = createModel(modelUrl);
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error("Model loading timed out after 20 seconds. Memory or Worker issue.")), 20000)
+        );
+        
+        model = await Promise.race([loadModelPromise, timeoutPromise]);
         recognizer = new model.KaldiRecognizer(16000);
         
         clearInterval(progressInterval);
@@ -75,11 +81,13 @@ async function initVosk() {
         micStatus.textContent = "Tap to speak (Offline Ready)";
         micBtn.disabled = false;
         logMessage("System ready. Vosk AI loaded locally.");
-    } catch (e) {
-        console.error("Failed to load model:", e);
-        micStatus.textContent = "Error loading model.";
-        micStatus.classList.add('error-text');
-        logMessage(`Failed to load AI model: ${e.message}`, "error");
+    } catch (error) {
+        console.error("Vosk init error:", error);
+        micStatus.textContent = "Error loading model. Check logs.";
+        micStatus.classList.add("error-text");
+        logOutput.textContent = `Error: ${error.message || "Failed to initialize voice engine"}`;
+        logOutput.classList.add("error-text");
+        progressContainer.classList.add('hidden');
     }
 }
 

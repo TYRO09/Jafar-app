@@ -1,5 +1,9 @@
 {
   "appId": "com.shubham.espvoice",
   "appName": "ESPVoiceControl",
-  "webDir": "dist"
+  "webDir": "dist",
+  "server": {
+    "cleartext": true,
+    "allowNavigation": ["*"]
+  }
 }
