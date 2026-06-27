@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>ESP32 Voice Control</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1>Voice Control</h1>
+        <div class="battery-indicator">
+          <span class="battery-icon"></span>
+          <span class="battery-text">--%</span>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <div class="status-card glass">
+          <h2>Current Mode</h2>
+          <div id="mode-display" class="mode-value">Disconnected</div>
+          <div class="angle-display">Angle: <span id="angle-value">--</span>°</div>
+        </div>
+
+        <div class="voice-control-section">
+          <button id="mic-button" class="mic-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" x2="12" y1="19" y2="22"/>
+            </svg>
+          </button>
+          <p id="mic-status" class="mic-status">Tap to speak</p>
+        </div>
+
+        <div class="log-card glass">
+          <h3>Last Recognized Command</h3>
+          <p id="log-output" class="log-output">...</p>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

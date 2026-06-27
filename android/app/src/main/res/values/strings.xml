@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ESPVoiceControl</string>
+    <string name="title_activity_main">ESPVoiceControl</string>
+    <string name="package_name">com.shubham.espvoice</string>
+    <string name="custom_url_scheme">com.shubham.espvoice</string>
+</resources>
