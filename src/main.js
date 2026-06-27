@@ -55,7 +55,7 @@ async function initVosk() {
         
         // Pre-fetch the model on the main thread to bypass Capacitor Web Worker network restrictions
         micStatus.textContent = "Downloading model to device...";
-        const response = await fetch('/model/model.tar.gz');
+        const response = await fetch('/model/model.bin');
         if (!response.ok) {
             throw new Error(`Failed to fetch model: ${response.status} ${response.statusText}`);
         }
