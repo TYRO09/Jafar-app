@@ -13,9 +13,9 @@
     <div id="app">
       <header class="header">
         <h1>Voice Control</h1>
-        <div class="battery-indicator">
-          <span class="battery-icon"></span>
-          <span class="battery-text">--%</span>
+        <div class="esp-status-indicator" id="esp-status-indicator">
+          <span class="status-dot disconnected" id="esp-status-dot"></span>
+          <span class="status-text" id="esp-status-text">ESP: Disconnected</span>
         </div>
       </header>
 
@@ -35,6 +35,12 @@
             </svg>
           </button>
           <p id="mic-status" class="mic-status">Tap to speak</p>
+          <div id="progress-container" class="progress-container hidden">
+            <div class="progress-bar-bg">
+              <div id="progress-bar-fill" class="progress-bar-fill"></div>
+            </div>
+            <p id="progress-text" class="progress-text">0%</p>
+          </div>
         </div>
 
         <div class="log-card glass">

@@ -53,7 +53,7 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-.battery-indicator {
+.esp-status-indicator {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -65,24 +65,24 @@ body {
   border: 1px solid var(--glass-border);
 }
 
-.battery-icon {
-  width: 20px;
+.status-dot {
+  width: 10px;
   height: 10px;
-  border: 1px solid var(--text-secondary);
-  border-radius: 2px;
-  position: relative;
+  border-radius: 50%;
   display: inline-block;
+  background-color: var(--text-secondary);
+  box-shadow: 0 0 8px rgba(148, 163, 184, 0.5);
+  transition: all 0.3s ease;
 }
 
-.battery-icon::after {
-  content: '';
-  position: absolute;
-  right: -3px;
-  top: 2px;
-  width: 2px;
-  height: 4px;
-  background: var(--text-secondary);
-  border-radius: 0 1px 1px 0;
+.status-dot.connected {
+  background-color: var(--success-color);
+  box-shadow: 0 0 8px var(--success-color);
+}
+
+.status-dot.disconnected {
+  background-color: var(--error-color);
+  box-shadow: 0 0 8px var(--error-color);
 }
 
 .main-content {
@@ -215,4 +215,44 @@ body {
 
 .error-text {
   color: var(--error-color);
+}
+
+/* Progress Bar Styles */
+.progress-container {
+  width: 100%;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.progress-container.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background-color: var(--glass-bg);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+  border-radius: 999px;
+  transition: width 0.3s ease-out;
+}
+
+.progress-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
 }

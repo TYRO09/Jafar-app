@@ -18,6 +18,13 @@ const modeDisplay = document.getElementById('mode-display');
 const angleDisplay = document.getElementById('angle-value');
 const logOutput = document.getElementById('log-output');
 
+// Progress Bar & ESP Status UI
+const progressContainer = document.getElementById('progress-container');
+const progressBarFill = document.getElementById('progress-bar-fill');
+const progressText = document.getElementById('progress-text');
+const espStatusDot = document.getElementById('esp-status-dot');
+const espStatusText = document.getElementById('esp-status-text');
+
 let isListening = false;
 let model = null;
 let recognizer = null;
@@ -29,13 +36,32 @@ let processorNode = null;
 // Initialize Vosk Model
 async function initVosk() {
     try {
-        micStatus.textContent = "Loading offline AI model (40MB)...";
+        micStatus.textContent = "Loading voice model...";
         micBtn.disabled = true;
+        progressContainer.classList.remove('hidden');
+
+        // Simulate progress for transparency
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            if (progress < 90) {
+                // Slower as it gets closer to 90
+                progress += (90 - progress) * 0.1;
+                progressBarFill.style.width = `${progress}%`;
+                if (progress < 30) progressText.textContent = `Downloading model... ${Math.round(progress)}%`;
+                else if (progress < 60) progressText.textContent = `Extracting files... ${Math.round(progress)}%`;
+                else progressText.textContent = `Initializing Engine... ${Math.round(progress)}%`;
+            }
+        }, 300);
         
         // Load the model from the public directory (using absolute URL for Blob Worker compatibility)
         const modelUrl = new URL('/model/model.tar.gz', window.location.href).href;
         model = await createModel(modelUrl);
         recognizer = new model.KaldiRecognizer(16000);
+        
+        clearInterval(progressInterval);
+        progressBarFill.style.width = `100%`;
+        progressText.textContent = "Ready!";
+        setTimeout(() => progressContainer.classList.add('hidden'), 1000);
         
         recognizer.on("result", (message) => {
             const result = message.result;
@@ -201,6 +227,27 @@ function logMessage(msg, type = "normal") {
 
 // Setup Event Listeners
 micBtn.addEventListener('click', toggleListening);
+
+// ESP Background Connectivity Check
+async function checkESPConnection() {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        await fetch(`http://${ESP_IP}/?ping=${Date.now()}`, { 
+            method: 'GET',
+            mode: 'no-cors',
+            signal: controller.signal 
+        });
+        clearTimeout(timeoutId);
+        espStatusDot.className = "status-dot connected";
+        espStatusText.textContent = "ESP: Connected";
+    } catch (e) {
+        espStatusDot.className = "status-dot disconnected";
+        espStatusText.textContent = "ESP: Disconnected";
+    }
+}
+setInterval(checkESPConnection, 5000);
+checkESPConnection();
 
 // Initialize
 initVosk();
