@@ -58,7 +58,7 @@ async function initVosk() {
         
         const loadModelPromise = createModel(modelUrl);
         const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error("Model loading timed out after 20 seconds. Memory or Worker issue.")), 20000)
+            setTimeout(() => reject(new Error("Model loading timed out after 60 seconds. Memory or Worker issue.")), 60000)
         );
         
         model = await Promise.race([loadModelPromise, timeoutPromise]);
